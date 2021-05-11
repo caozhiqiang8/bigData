@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}用户数据查询{% endblock %}
+
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block user_active %}
+    active
+{% endblock user_active %}
+
+{% block body %}
+
+    <!-- 教师用户名查询-->
+    <form class="form-inline" method="post" action="/user">
+        <div class="form-group" style="margin: 10px 500px 10px">
+            <label for="exampleInputName2">教师用户名：</label>
+            <input type="text" class="form-control" id="exampleInputName2" name='user_tea_name'
+                   placeholder="请输入教师用户名">
+            <button type="submit" class="btn btn-default">搜索</button>
+        </div>
+    </form>
+    <!-- 教师用户名id-->
+
+    <form class="form-inline" method="post" action="/user">
+        <div class="form-group" style="margin: 10px 500px 10px">
+            <label for="exampleInputName2">教师用户ID：</label>
+            <input type="text" class="form-control" id="exampleInputName2" name='user_tea_id'
+                   placeholder="请输入教师用户ID">
+            <button type="submit" class="btn btn-default">搜索</button>
+        </div>
+    </form>
+    <!-- 学生查询-->
+    <form class="form-inline" method="post" action="/user">
+        <div class="form-group" style="margin: 10px 500px 10px">
+            <label for="exampleInputName2">学生用户名：</label>
+            <input type="text" class="form-control" id="exampleInputName2" name='user_stu_name'
+                   placeholder="请输入学生用户名">
+            <button type="submit" class="btn btn-default">搜索</button>
+        </div>
+    </form>
+
+    <form class="form-inline" method="post" action="/user">
+        <div class="form-group" style="margin: 10px 500px 10px">
+            <label for="exampleInputName2">学生用户ID：</label>
+            <input type="text" class="form-control" id="exampleInputName2" name='user_stu_id'
+                   placeholder="请输入学生用户ID">
+            <button type="submit" class="btn btn-default">搜索</button>
+        </div>
+
+    </form>
+
+    <div style="width: 1300px;margin: auto;margin-top: 50px;">
+        {% if tea_data %}
+
+            <table border='1' width="1000px" class="table table-bordered">
+
+                <tr>
+                    <th>学校名称</th>
+                    <th>学校ID</th>
+                    <th>jid</th>
+                    <th>用户名</th>
+                    <th>密码</th>
+                    <th>真实姓名</th>
+                    <th>（0有效，1无效）</th>
+                    <th>班级ID</th>
+                    <th>年级</th>
+                    <th>班级名称</th>
+                    <th>班级类型</th>
+                    <th>授课学科</th>
+                    <th>创建时间</th>
+
+                </tr>
+
+                {% for i in tea_data %}
+                    <tr>
+                        <td>{{ i.name }}</td>
+                        <td>{{ i.school_id }}</td>
+                        <td>{{ i.ETT_USER_ID }}</td>
+                        <td>{{ i.user_name }}</td>
+                        <td>{{ i.password }}</td>
+                        <td>{{ i.TEACHER_NAME }}</td>
+                        <td>{{ i.state_id }}</td>
+                        <td>{{ i.CLASS_ID }}</td>
+                        <td>{{ i.CLASS_GRADE }}</td>
+                        <td>{{ i.CLASS_NAME }}</td>
+                        <td>{{ i.PATTERN }}</td>
+                        <td>{{ i.SUBJECT_NAME }}</td>
+                        <td>{{ i.C_TIME }}</td>
+
+                    </tr>
+                {% endfor %}
+
+            </table>
+        {% endif %}
+
+
+        {% if stu_data %}
+            <table class="table table-bordered">
+                <tr>
+                    <td>学校名称</td>
+                    <td>学校ID</td>
+                    <td>JID</td>
+                    <td>用户名</td>
+                    <td>密码</td>
+                    <td>姓名</td>
+                    <td>（0有效，1无效）</td>
+                    <td>班级ID</td>
+                    <td>年级</td>
+                    <td>班级名称</td>
+                    <td>创建时间</td>
+                </tr>
+                {% for i in stu_data %}
+                    <tr>
+                        <td>{{ i.name }}</td>
+                        <td>{{ i.school_id }}</td>
+                        <td>{{ i.ETT_USER_ID }}</td>
+                        <td>{{ i.user_name }}</td>
+                        <td>{{ i.password }}</td>
+                        <td>{{ i.STU_NAME }}</td>
+                        <td>{{ i.state_id }}</td>
+                        <td>{{ i.CLASS_ID }}</td>
+                        <td>{{ i.CLASS_GRADE }}</td>
+                        <td>{{ i.CLASS_NAME }}</td>
+                        <td>{{ i.C_TIME }}</td>
+
+
+                    </tr>
+                {% endfor %}
+            </table>
+
+        {% endif %}
+    </div>
+
+{% endblock %}

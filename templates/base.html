@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>{% block  title %}{% endblock %}</title>
+
+    {% block  echarts_script %}
+        <script src="/static/js/echarts.min.js"></script>
+    {% endblock %}
+
+    {% block  china_echarts_script %}
+        <script src="/static/js/china.js"></script>
+    {% endblock %}
+
+
+    {% block  bootstrap_script %}
+        <!-- jquery.js -->
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+
+        <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+                crossorigin="anonymous"></script>
+        <!-- VUE  文件 -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    {% endblock %}
+
+
+</head>
+<body>
+
+{% block navbar %}
+
+    <!-- 导航 -->
+    <nav class="navbar navbar-default " style="margin-bottom:0px">
+        <div class="container-fluid">
+            <!-- 头 -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">BigData</a>
+            </div>
+            <!-- 导航 -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="{% block index_active %}{% endblock %}"><a href="/index">首页 </a></li>
+                    <li class="{% block school_active %}{% endblock %}"><a href="/school">学校数据查询 </a></li>
+                    <li class="{% block user_active %}{% endblock %}"><a href="/user">用户数据查询<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="{% block res_active %}{% endblock %}"><a href="/resource">资源数据查询</a></li>
+                    <li class="{% block paper_active %}{% endblock %}"><a href="/paper">智能组卷数据查询</a></li>
+                    <li class="{% block task_active %}{% endblock %}"><a href="/task">任务数据查询</a></li>
+                    <li class="{% block user_aciton_active %}{% endblock %}"><a href="/useraction">用户行为日志</a></li>
+                    <li class="{% block ocr_active %}{% endblock %}"><a href="/imgocr">OCR识别</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">工具箱 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">敬请期待...</a></li>
+                            <li><a href="#">敬请期待...</a></li>
+                            <li><a href="#">敬请期待...</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+{% endblock %}
+
+
+{% block body %}
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+
+</body>
+</html>

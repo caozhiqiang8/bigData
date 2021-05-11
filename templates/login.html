@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}登录{% endblock %}
+
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+
+{% block body %}
+
+    <div style="width: 50%;margin: 200px auto;" id='login'>
+        <div class="form-group">
+            <label for="exampleInputEmail1">用户名：</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" name="user_name" placeholder="请输入用户名"
+                   v-model="user_name">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">密码：</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="请输入密码"
+                   v-model="password">
+        </div>
+{#        <span style="color: red" id='masg'></span>#}
+        <p style="color: red;font-size: 16px" v-text="masg"></p>
+        <button style="width: 100%" type="submit" class="btn btn-default" id='login' @click="login">登录</button>
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#login',
+            delimiters: ['[[', ']]'],
+            data: {
+                user_name: '',
+                password: '',
+                masg: '',
+            },
+            methods: {
+                login: function () {
+                    axios.post('/login', {'user_name': this.user_name, 'password': this.password})
+                        .then(data => {
+
+                            if (data.data.code === '1') {
+                                window.location.replace('/index')
+                            } else (
+                                this.user_name = '',
+                                    this.password = '',
+                                    this.masg = '帐号或密码错误'
+                            )
+
+
+                        }).catch(err => (console.log(err)))
+                }
+            }
+
+
+        })
+
+
+    </script>
+{% endblock %}

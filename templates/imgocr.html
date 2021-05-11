@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}OCR{% endblock %}
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block ocr_active %}
+    active
+{% endblock %}
+
+{% block body %}
+    <div style="width: 50%;margin: 30px auto;">
+
+        <form action="/imgocr" method="post" enctype="multipart/form-data" >
+            <input type="file" accept="image/png,image/jpg" name="img_file" style="float: left;margin-top: 5px" >
+            <button style="width: 100px;" type="submit" class="btn btn-default">上传识别</button>
+        </form>
+        <img src=" {{ file_path }}" alt="">
+        <div style="margin-top: 50px;font-size: 16px">
+            {% for i in res %}
+                <p>{{ i }}</p>
+            {% endfor %}
+        </div>
+
+    </div>
+{% endblock %}
+

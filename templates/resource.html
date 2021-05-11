@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}资资源数据查询{% endblock %}
+
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block res_active %}
+    active
+{% endblock res_active %}
+
+{% block body %}
+
+    <div style="background-color:#ec4a4a;color: white;font-size: 14px;padding: 5px;text-align: center; "> 数据更新时间： {{ update_time[0].c_time }}</div>
+
+
+    <div style="width: 1300px;margin: 50px auto">
+
+        {% if res_data %}
+            <table class="table table-bordered">
+                <tr>
+                    <td>年级</td>
+                    <td>学科</td>
+                    <td>课件数量</td>
+                    <td>关联微课的学案数量</td>
+                    <td>微课数量</td>
+                    <td>关联学案的微课数量</td>
+                    <td>成卷数量</td>
+                    <td>AB卷数量</td>
+                    <td>试题数量</td>
+
+
+                </tr>
+                {% for i in res_data %}
+                    <tr>
+                        <td>{{ i.grade_name }}</td>
+                        <td>{{ i.subject_name }}</td>
+                        <td>{{ i.word_count }}</td>
+                        <td>{{ i.word_mp4_count }}</td>
+                        <td>{{ i.mp4_count }}</td>
+                        <td>{{ i.mp4_word_count }}</td>
+                        <td>{{ i.cpaper_count }}</td>
+                        <td>{{ i.paper_count }}</td>
+                        <td>{{ i.question_count }}</td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock body %}
