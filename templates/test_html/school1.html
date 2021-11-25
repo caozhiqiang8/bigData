@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}学校数据查询{% endblock %}
+
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block school_active %}
+    active
+{% endblock school_active %}
+
+{% block body %}
+
+        <div style="background-color:#ec4a4a;color: white;font-size: 14px;padding: 5px;text-align: center; "> 数据更新时间： {{ update_time[0].c_time }}</div>
+
+
+    <div style="width: 1300px;margin: auto;margin-top: 50px;" id = 'app'>
+        <!-- 教师数据呈现-->
+        {% if school_teacher_task %}
+            <table class="table table-bordered">
+                <tr>
+                    <td>学校ID</td>
+                    <td>学校名称</td>
+                    <td>班级数量</td>
+                    <td>爱学派班级数量</td>
+                    <td>教师人数</td>
+                    <td>学生人数</td>
+
+
+                </tr>
+                {% for i in school_teacher_task %}
+                    <tr>
+                        <td>{{ i.school_id }}</td>
+                        <td>{{ i.name }}</td>
+                        <td>{{ i.class_count }}</td>
+                        {% if i.hp_count ==None %}
+                            <td>0</td>
+                        {% else %}
+                            <td>{{ i.axp_class_count }}</td>
+                        {% endif %}
+
+                        {% if i.tea_count ==None %}
+                            <td>0</td>
+                        {% else %}
+                            <td>{{ i.tea_count }}</td>
+                        {% endif %}
+
+                        {% if i.stu_count ==None %}
+                            <td>0</td>
+                        {% else %}
+                            <td>{{ i.stu_count }}</td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    </div>
+
+{% endblock body %}
+
+{% block js %}
+
+{% endblock %}

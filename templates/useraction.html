@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block title %}用户行为查询{% endblock %}
+{% block  echarts_script %}{% endblock %}
+{% block  china_echarts_script %}{% endblock %}
 {% block user_aciton_active %}
     active
 {% endblock %}
@@ -12,7 +14,6 @@
                 <label for="exampleInputEmail1"> 输入用户jid查询：</label>
                 <input class="form-control" type="text" name="user_id"/>
                 <input class="btn btn-default" type="submit" value="查询"/>
-
             </div>
 
         </form>

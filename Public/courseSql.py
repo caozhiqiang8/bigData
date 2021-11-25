@@ -95,13 +95,15 @@ course_count = course_df_merge.fillna(0)
 
 # school_class_user
 school_class_user_sql = '''
-SELECT fr.school_id,fr.name,count(distinct c.class_id) as class_count, count(distinct axp.class_id) as axp_class_count, tea.tea_count as tea_count,stu.stu_count as  stu_count
-from  franchised_school_info fr LEFT JOIN class_info c on fr.school_id = c.dc_school_id
-LEFT JOIN ( SELECT c.DC_SCHOOL_ID , count(DISTINCT jc.user_id ) as 'tea_count' from j_class_user jc ,class_info c  where c.year = '2020~2021' and c.class_id = jc.class_id and jc.RELATION_TYPE = '任课老师' GROUP BY c.DC_SCHOOL_ID  ) tea  on tea.DC_SCHOOL_ID = fr.school_id
-LEFT JOIN ( SELECT c.DC_SCHOOL_ID , count(DISTINCT jc.user_id ) as 'stu_count' from j_class_user jc ,class_info c  where c.year = '2020~2021' and c.class_id = jc.class_id and jc.RELATION_TYPE = '学生' GROUP BY c.DC_SCHOOL_ID  ) stu on stu.DC_SCHOOL_ID = fr.school_id
-LEFT JOIN (SELECT class_id,DC_SCHOOL_ID from class_info where year = '2020~2021'  and axp_end_time >NOW() ) axp on axp.DC_SCHOOL_ID = fr.school_id
-where fr.school_type in (3,4) and fr.school_id  >50000 and fr.enable = 0 and c.year = '2020~2021' 
+SELECT fr.school_id,fr.name, class_count, axp_class_count, tea.tea_count as tea_count,stu.stu_count as  stu_count
+from  (SELECT fr.school_id,fr.name from franchised_school_info fr  where fr.school_type in (3,4) and fr.school_id  >50000 and fr.enable = 0  and fr.validity_time >=NOW() )fr
+LEFT JOIN (SELECT DC_SCHOOL_ID,count(distinct class_id) as class_count from  class_info  where year = '2021~2022' GROUP BY DC_SCHOOL_ID )c on fr.school_id = c.dc_school_id 
+LEFT JOIN ( SELECT c.DC_SCHOOL_ID , count(DISTINCT jc.user_id ) as 'tea_count' from j_class_user jc ,class_info c  where c.year = '2021~2022' and c.class_id = jc.class_id and jc.RELATION_TYPE = '任课老师' GROUP BY c.DC_SCHOOL_ID  ) tea  on tea.DC_SCHOOL_ID = fr.school_id
+LEFT JOIN ( SELECT c.DC_SCHOOL_ID , count(DISTINCT jc.user_id ) as 'stu_count' from j_class_user jc ,class_info c  where c.year = '2021~2022'and c.class_id = jc.class_id and jc.RELATION_TYPE = '学生' GROUP BY c.DC_SCHOOL_ID  ) stu on stu.DC_SCHOOL_ID = fr.school_id
+LEFT JOIN (SELECT DC_SCHOOL_ID,count(distinct class_id) as axp_class_count from class_info where year = '2021~2022'  and axp_end_time >NOW()  GROUP BY DC_SCHOOL_ID) axp on axp.DC_SCHOOL_ID = fr.school_id
 group by fr.school_id
+
+
 '''
 
 # paper_online_info
@@ -124,7 +126,7 @@ if __name__ == '__main__':
     # mysqlSqlite(sql=task_class_sql, db_name='j_task_class')
     # mysqlSqlite(sql=task_group_sql, db_name='j_task_group')
     task_count.to_sql(name='every_day_task',con=con, if_exists='replace', index=False)
-    course_count.to_sql(name='every_day_course',con=con, if_exists='replace', index=False)
+    # course_count.to_sql(name='every_day_course',con=con, if_exists='replace', index=False)
     e_time = datetime.datetime.now()
     lenth_time = (e_time - b_time)
     print('开始时间：', b_time.strftime('%Y-%m-%d %H:%M:%S'))

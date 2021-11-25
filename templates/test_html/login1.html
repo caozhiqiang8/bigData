@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}登录{% endblock %}
+
+{% block echarts_script %} {% endblock %}
+{% block china_echarts_script %} {% endblock %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+
+{% block body %}
+
+    <form action="/login" method="post">
+        <div style="width: 50%;margin: 200px auto;">
+            <div class="form-group">
+                <label for="exampleInputEmail1">用户名：</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="user_name" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">密码：</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                       placeholder="请输入密码">
+            </div>
+            <span style="color: red" id='masg'></span>
+            <p style="color: red;font-size: 16px">{{ masg }}</p>
+            <button style="width: 100%" type="submit" class="btn btn-default" id='login'>登录</button>
+
+        </div>
+    </form>
+
+{% endblock %}
+
+

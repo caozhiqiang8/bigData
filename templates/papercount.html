@@ -1,0 +1,54 @@
+{% extends 'paperBase.html' %}
+
+{% block title %}资资源数据查询{% endblock %}
+
+{% block body %}
+
+        {{ super() }}
+
+    <div style="width: 1300px;margin: 30px auto" id='papercount'>
+
+        <button style="width: 200px;margin-bottom:40px" type="submit" class="btn btn-default" @click='serch'>查询
+        </button>
+        <template>
+            <el-table
+                    :data="paper"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+            >
+                <el-table-column
+                        prop="wisdom_exam"
+                        label="试卷类型"
+                        sortable
+                >
+
+                    <template slot-scope="scope">
+                        [[ paper_map[scope.row.wisdom_exam] ]]
+                    </template>
+
+                </el-table-column>
+                <el-table-column
+                        prop="paper_count"
+                        label="试卷数量"
+                        sortable
+                >
+
+                </el-table-column>
+
+            </el-table>
+        </template>
+
+
+    </div>
+
+
+{% endblock body %}
+
+{% block paperBarActive %} 'first' {% endblock %}
+{% block paperlist_js %}{% endblock %}
+{% block papergroup_js %}{% endblock %}
+
+

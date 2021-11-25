@@ -1,0 +1,144 @@
+{% extends 'exerciseBase.html' %}
+
+{% block title %}练习册数据查询{% endblock %}
+
+
+{% block body %}
+    {{ super() }}
+
+    <div style="width: 1300px;margin: 40px auto" id="exerciseData">
+        <button style="width: 200px;margin-bottom:40px" type="submit" class="btn btn-default" @click='exercisePaperSerch'>查询
+        </button>
+        <p>
+            说明：此查询为练习册没有结构试卷，不能同步
+        </p>
+        <template>
+            <el-table
+                    :data="structure_data"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+                    v-loading.fullscreen.lock="loading"
+                    element-loading-text="玩命的加载中....."
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.5)"
+            >
+                <el-table-column
+                        prop="test_paper_id"
+                        label="试卷ID"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="test_paper_name"
+                        label="试卷名称"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="grade_id"
+                        label="年级ID"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        [[ grade_map[scope.row.grade_id] ]]
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="subject_id"
+                        label="学科ID"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        [[ subject_map[scope.row.subject_id] ]]
+                    </template>
+
+                </el-table-column>
+                <el-table-column
+                        prop="c_time"
+                        label="创建时间"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="m_time"
+                        label="更新时间"
+                        sortable
+                >
+                </el-table-column>
+            </el-table>
+        </template>
+
+        <p style="margin-top: 50px">
+            说明：此查询为练习册结构有问题的试卷，不能同步
+        </p>
+        <template>
+            <el-table
+                    :data="no_structure_data"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+            >
+                <el-table-column
+                        prop="test_paper_id"
+                        label="试卷ID"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="test_paper_name"
+                        label="试卷名称"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="grade_id"
+                        label="年级ID"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        <p>
+                            [[ gradeMap[scope.row.grade_id] ]]
+                        </p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="subject_id"
+                        label="学科ID"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        <p>
+                            [[ subjectMap[scope.row.subject_id] ]]
+                        </p>
+                    </template>
+
+                </el-table-column>
+                <el-table-column
+                        prop="c_time"
+                        label="创建时间"
+                        sortable
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="m_time"
+                        label="更新时间"
+                        sortable
+                >
+                </el-table-column>
+            </el-table>
+        </template>
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block Active %} 'first' {% endblock %}
+
+

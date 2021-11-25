@@ -2,7 +2,7 @@ import sqlite3
 from functools import reduce
 import  datetime
 import  pandas as pd
-from Public.sqlDB import mysqlDB, mysqlSqlite, sqliteDB, SqliteDB
+from Public.sqlDB import mysqlDB,SqliteDB
 
 b_time = datetime.datetime.now()
 # 课件

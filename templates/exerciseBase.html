@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block  echarts_script %}{% endblock %}
+{% block  china_echarts_script %}{% endblock %}
+
+{% block exercisepaper_active %}
+    active
+{% endblock exercisepaper_active %}
+
+{% block body %}
+
+    <div id='app'>
+        <div style="width: 1300px;margin:30px auto;">
+            <template>
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <el-tab-pane label="同步查询" name="first"></el-tab-pane>
+                    <el-tab-pane label="练习册数量" name="second"></el-tab-pane>
+                    <el-tab-pane label="练习册分布" name="third"></el-tab-pane>
+                    <el-tab-pane label="学校使用情况" name="four"></el-tab-pane>
+                    <el-tab-pane label="分校每天使用情况" name="five"></el-tab-pane>
+                </el-tabs>
+            </template>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block js %}
+
+    <script type="text/javascript">
+        //导航
+        var bar = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                activeName: {%  block Active %} {% endblock %},
+                path: {
+                    first: 'exercisePaper',
+                    second: 'exerciseCount',
+                    third: 'exerciseList',
+                    four: 'exerciseSchool',
+                    five: 'exerciseBranchSchool',
+                },
+                {#bookMap: ''#}
+
+            },
+            methods: {
+                handleClick(tab, event) {
+                    if (tab.name === 'first') {
+
+                        window.location = this.path.first
+                    }
+                    if (tab.name === 'second') {
+                        window.location = this.path.second
+                    }
+                    if (tab.name === 'third') {
+                        window.location = this.path.third
+                        this.getBook()
+                    }
+                    if (tab.name === 'four') {
+                        window.location = this.path.four
+                    }
+                    if (tab.name === 'five') {
+                        window.location = this.path.five
+                    }
+                },
+                getBook: function () {
+                    axios.get('/exerciseBook')
+                        .then(data => {
+                            console.log(data.data)
+                            {#this.bookMap = data.data#}
+                            {#this.exerciseData.bookMap = data.data#}
+
+                        })
+                        .catch(err => (console.log(err)))
+                }
+
+            }
+
+        });
+        //数据
+        var exerciseData = new Vue({
+            el: '#exerciseData',
+            data: {
+                'loading': false,//加载动画
+                'structure_data': [],//结构有问题的试卷
+                'no_structure_data': [],//没结构的试卷
+                'exerciseCount_data': [],//练习册数量
+                'exerciseList_data': [],//练习册分布
+                'exerciseSchool_data': [],//学校使用情况
+                'schoolTask_data': [],// 学校任务情况
+                'exerciseBranchSchool_data': [],//分校每天使用情况
+                'exerciseSchoolShow': true,//学校使用情况是否显示
+                'schoolTaskShow': false,// 学校任务情况是否显示
+                'radio': '',
+                'grade': '',
+                'subject': '',
+                'book': '',
+                'userToken': '',//token
+                {#'bookMap':{},#}
+                'bookMap':{0:'全部',100557195283: '高三物理《课后达标检测》总复习专题（新）', 100557191939: '高三化学《课时作业》总复习专题（新）', 100550432501: '《固学案》数学人教A版选修1-1', 100551442080: '《固学案》数学人教A版选修2-1', 100549695804: '《固学案》数学人教A版必修3', 100555145761: '《固学案》数学人教A版选修2-2', 100558630044: '《固学案》数学人教A版选修1-2', 100559407248: '高二数学《课时跟踪检测》XB1 新人教A', 100560872344: '《固学案》数学人教A版选修2-3', 100560908615: '高二数学《课时分层训练》XB1 新人教A', 100558235701: '高二物理《课时分层训练》 B3', 100549695564: '《固学案》物理人教版选修3-1', 100560695696: '高二物理《课时分层训练》 XB1', 100557300645: '高二化学《课时分层训练》XB1 新鲁科', 100557287922: '高一数学《课时跟踪检测》B1 新人教A', 100555107509: '高一数学《课时分层训练》B1   新人教A版', 100555110446: '高一数学《课时分层训练》B2 新人教A版 ', 100507712711: '《卷行天下》数学人教A版必修2', 100507692657: '《固学案》数学人教A版必修2', 100545162115: '《固学案》数学人教A版必修第一册', 100560701844: '高一物理《课时分层训练》B1', 100499074990: '《固学案》物理人教版必修2', 100545127719: '《固学案》物理人教版必修第一册', 100545128022: '《固学案》物理人教版必修第二册', 100556012849: '高一物理《同步练习册》B1 人教新（已弃）', 100556002622: '高一化学《课时分层训练》B1 新鲁科', 100550438336: '《固学案》化学人教版必修第一册', 100553650489: '《初中同步练习册》数学鲁教九上', 100563596413: '《学考精练》数学 人教版 九上', 100561343992: '《新课程 同步练习册》数学  华东师大版 九上', 100563592278: '《八中练习集锦》数学 人教版 九上', 100557868815: '《初中同步练习册》物理鲁科五四制九上', 100562206014: '《新课程 同步练习册》物理 沪科版 九年级全一册', 100560880356: '《聚力课堂》物理沪科 粤教版九下', 100560867222: '《聚力课堂》物理沪科 粤教版九上', 100562608219: '《新课程 同步练习册》化学 人教版 九年级上册', 100558433328: '《初中同步练习册》化学鲁教九上', 100509672495: '《学探诊》化学人教九上', 100562796757: '《初中同步练习册》数学 北师大版 八上', 100563596388: '《学考精练》数学 人教版 八上', 100561343959: '《新课程 同步练习册》数学  华东师大版 八上', 100553650281: '《初中同步练习册》数学鲁教八上', 100559855230: '《全品作业本》数学 人教版 八上', 100508154319: '《学练优》数学人教八下', 100546740618: '《同步轻松练习》数学人教八上', 100489791795: '《典中点》八年级上册', 100546740820: '《同步轻松练习》物理人教八上', 100557863193: '《初中同步练习册》物理鲁科五四制八上', 100562206329: '《新课程 同步练习册》物理 沪科版 八年级上册', 100559409437: '《初中同步练习册》化学鲁教八上', 100558471082: '《初中同步练习册》数学 北师大版 七上', 100546740591: '《同步轻松练习》数学人教七上', 100561343950: '《新课程 同步练习册》数学  华东师大版 七上', 100508155058: '《名校课堂》数学人教七下', 100553627433: '《初中同步练习册》数学鲁教七上', 100563596345: '《学考精练》数学 人教版 七上', 100565138334: '《零障碍 导教导学案》数学 人教版 七上', 100564909350: '《同步练习册》英语 外研版 七上'},
+                'subjectMap': {
+                    {#1: '语文',#}
+                    2: '数学',
+                    3: '英语',
+                    4: '物理',
+                    5: '化学',
+                    {#6: '历史',#}
+                    {#7: '生物',#}
+                    {#8: '地理',#}
+                    {#9: '政治',#}
+                    {#10: '科学',#}
+
+                },
+                'gradeMap': {
+                    1: '高三',
+                    2: '高二',
+                    3: '高一',
+                    4: '初三',
+                    5: '初二',
+                    6: '初一',
+                    7: '小六',
+                    {#8: '小五',#}
+                    {#9: '小四',#}
+                },
+
+            },
+            delimiters: ['[[', ']]'],
+            methods: {
+                //结构有问题的试卷
+                exercisePaperSerch: function () {
+                    this.loading = true
+                    axios.post('/exercise', {'code': '0'})
+                        .then(data => {
+                            this.structure_data = data.data.structure_data
+                            this.no_structure_data = data.data.no_structure_data
+                            this.loading = false
+                        })
+                        .catch(err => (console.log(err)))
+
+                },
+                //练习册数量
+                exerciseCountSerch: function () {
+                    this.loading = true
+                    axios.post('/exercise', {'code': '1'})
+                        .then(data => {
+                            this.exerciseCount_data = data.data.exercisecount_data
+                            this.loading = false
+                        })
+                        .catch(err => (console.log(err)))
+
+                },
+                //练习册分布
+                exerciseListSerch: function () {
+
+                    if (this.subject == '' || this.grade == '') {
+                        console.log('请选择')
+
+                    } else {
+                        this.loading = true
+                        axios.post('exercise', {
+                            'code': '2',
+                            'subject': this.subject,
+                            'grade': this.grade,
+                            'book': this.book
+                        })
+                            .then(data => {
+                                this.exerciseList_data = data.data.exerciselist_data
+                                this.userToken = data.data.user_token
+                                this.loading = false
+                            })
+                            .catch(err => (console.log(err)))
+                    }
+
+                },
+                //学校使用情况
+                exerciseSchoolSerch: function () {
+                    this.loading = true
+                    axios.post('/exercise', {'code': '3'})
+                        .then(data => {
+                            this.exerciseSchool_data = data.data.exerciseschool_data
+                            this.exerciseSchoolShow = true
+                            this.schoolTaskShow = false
+                            this.loading = false
+                        })
+                        .catch(err => (console.log(err)))
+
+                },
+                // 学校任务情况
+                getSchoolTask: function (school_id) {
+                    this.loading = true
+                    axios.get('/exercise?schoolId=' + school_id)
+                        .then(data => {
+                            this.schoolTask_data = data.data.school_task
+                            this.userToken = data.data.user_token
+                            this.exerciseSchoolShow = false
+                            this.schoolTaskShow = true
+                            this.loading = false
+                            console.log(data.data.school_task)
+                        })
+                        .catch(err => (console.log(err)))
+
+
+                },
+                //分校每天使用情况
+                exerciseBranchSchoolSerch: function () {
+                    this.loading = true
+                    axios.post('/exercise', {'code': '4'})
+                        .then(data => {
+                            this.exerciseBranchSchool_data = data.data.every_count_data
+                            this.loading = false
+                        })
+                        .catch(err => (console.log(err)))
+
+                },
+
+            }
+
+        })
+
+
+    </script>
+{% endblock %}

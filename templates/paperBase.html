@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block  echarts_script %}{% endblock %}
+{% block  china_echarts_script %}{% endblock %}
+
+
+{% block paper_active %}
+    active
+{% endblock paper_active %}
+
+{% block body %}
+
+    <div id='app'>
+        <div style="background-color:#ec4a4a;color: white;font-size: 14px;padding: 5px;text-align: center; ">
+            数据更新时间：[[ update_time ]]
+
+        </div>
+
+        <div style="width: 1300px;margin:30px auto;">
+            <template>
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <el-tab-pane label="组卷类型分布" name="first"></el-tab-pane>
+                    <el-tab-pane label="年级学科分布" name="second"></el-tab-pane>
+                    <el-tab-pane label="智能组卷明细" name="third"></el-tab-pane>
+                </el-tabs>
+            </template>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block js %}
+
+    <script type="text/javascript">
+        var bar = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                activeName: {%  block paperBarActive %} {% endblock %} ,
+                update_time: '',
+                path: {
+                    first: 'papercount',
+                    second: 'papergroup',
+                    third: 'paperlist',
+                },
+
+            },
+            methods: {
+                handleClick(tab, event) {
+                    if (tab.name === 'first') {
+                        window.location = this.path.first
+                    }
+                    if (tab.name === 'second') {
+                        window.location = this.path.second
+                    }
+                    if (tab.name === 'third') {
+                        window.location = this.path.third
+                    }
+                },
+                gettime() {
+                    axios.get('/update')
+                        .then(data => {
+                            this.update_time = data.data.update_time
+                        })
+                        .catch(err => (console.log(err)))
+                },
+
+            },
+            mounted() {
+                this.gettime()
+            }
+
+        });
+        {% block papercount_js %}
+            var papercount = new Vue({
+                el: '#papercount',
+                delimiters: ['[[', ']]'],
+                data: {
+                    paper: '',
+                    update_time: '',
+                    paper_map: {
+                        1: '慧考试',
+                        2: '智能组卷'
+                    }
+                },
+                methods: {
+                    serch() {
+                        axios.post('/paper', {'code': '0'})
+                            .then(data => {
+                                this.paper = data.data.paper_data
+                            })
+                            .catch(err => (console.log(err)))
+                    }
+                }
+
+            });
+        {% endblock %}
+
+        {% block paperlist_js %}
+            var paperlist = new Vue({
+                el: '#paperlist',
+                delimiters: ['[[', ']]'],
+                data: {
+                    paper: '',
+                    paper_map: {
+                        1: '慧考试',
+                        2: '智能组卷'
+                    }
+                },
+                methods: {
+                    serch() {
+                        axios.post('/paper', {'code': '2'})
+                            .then(data => {
+                                this.paper = data.data.paper_data
+                            })
+                            .catch(err => (console.log(err)))
+                    }
+                }
+
+            })
+        {% endblock %}
+        {% block papergroup_js %}
+            var papergroup = new Vue({
+                el: '#papergroup',
+                delimiters: ['[[', ']]'],
+                data: {
+                    paper: '',
+                    paper_map: {
+                        1: '慧考试',
+                        2: '智能组卷'
+                    },
+                    subject_map: {
+                        1: '语文',
+                        2: '数学',
+                        3: '英语',
+                        4: '物理',
+                        5: '化学',
+                        6: '历史',
+                        7: '生物',
+                        8: '地理',
+                        9: '政治',
+                        10: '科学',
+
+                    },
+                    grade_map: {
+                        1: '高三',
+                        2: '高二',
+                        3: '高一',
+                        4: '初三',
+                        5: '初二',
+                        6: '初一',
+                        7: '小六',
+                        8: '小五',
+                        9: '小四',
+                    }
+                },
+                methods: {
+                    serch() {
+                        axios.post('/paper', {'code': '1'})
+                            .then(data => {
+                                this.paper = data.data.paper_data
+                            })
+                            .catch(err => (console.log(err)))
+                    }
+                }
+
+            })
+
+        {% endblock %}
+    </script>
+{% endblock %}

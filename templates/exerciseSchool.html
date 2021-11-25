@@ -1,0 +1,166 @@
+{% extends 'exerciseBase.html' %}
+
+{% block title %}练习册数据查询{% endblock %}
+
+
+{% block body %}
+    {{ super() }}
+
+    <div style="width: 1300px;margin: 40px auto" id="exerciseData">
+        <button style="width: 200px;margin-bottom:40px" type="submit" class="btn btn-default"
+                @click='exerciseSchoolSerch'>查询
+        </button>
+
+        <template>
+            <el-table
+                    :data="exerciseSchool_data"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+                    v-loading.fullscreen.lock="loading"
+                    element-loading-text="玩命的加载中....."
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.5)"
+                    v-show="exerciseSchoolShow"
+            >
+                <el-table-column
+                        prop="school_id"
+                        label="学校ID"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        <p style="color: blue" @click="getSchoolTask(scope.row.school_id)"> [[ scope.row.school_id ]]</p>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                        prop="name"
+                        label="学校名称"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="belong_name"
+                        label="分校名称"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="task_count"
+                        label="练习册发布数量"
+                        sortable
+                >
+                </el-table-column>
+
+
+            </el-table>
+        </template>
+
+        {#学校任务详情#}
+        <template>
+            <el-table
+                    :data="schoolTask_data"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+                    v-loading.fullscreen.lock="loading"
+                    element-loading-text="玩命的加载中....."
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.5)"
+                    v-show="schoolTaskShow"
+            >
+
+
+                <el-table-column
+                        prop="task_id"
+                        label="任务ID"
+                        sortable
+                >
+
+                </el-table-column>
+
+                <el-table-column
+                        prop="task_full_name"
+                        label="任务名称"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="c_time"
+                        label="创建时间"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="ett_user_id"
+                        label="用户ID"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="teacher_name"
+                        label="教师真实姓名"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="fz"
+                        label="完成人数"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="fm"
+                        label="接收人数"
+                        sortable
+                >
+                </el-table-column>
+
+                <el-table-column
+                        prop="pg"
+                        label="批改人数"
+                        sortable
+                >
+                </el-table-column>
+
+
+                </el-table-column>
+
+                <el-table-column
+                        prop=""
+                        label="查看报告"
+                        sortable
+                >
+                    <template slot-scope="scope">
+                        <a :href=" 'https://school-web.ai-classes.com/ecampus/report/index.html?token=' + [[ userToken ]] + '&tid=' + scope.row.task_id + '&pid=' + scope.row.paper_id "
+                           target="_blank">
+                            查看报告
+                        </a>
+                    </template>
+
+                </el-table-column>
+
+
+            </el-table>
+        </template>
+
+
+    </div>
+
+
+
+{% endblock %}
+
+
+{% block Active %} 'four' {% endblock %}

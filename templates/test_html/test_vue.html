@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}登录-vue{% endblock %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+
+{% block body %}
+
+    <div style="width: 50%;margin: 200px auto;">
+        <div class="form-group">
+            <label for="exampleInputEmail1">用户名：</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" name="user_name" placeholder="请输入用户名">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">密码：</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                   placeholder="请输入密码">
+        </div>
+        <span style="color: red" id='masg'></span>
+        <p style="color: red;font-size: 16px">{{ masg }}</p>
+        <button style="width: 100%" type="submit" class="btn btn-default" id='login'>登录</button>
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+
+    <script type="text/javascript">
+
+        var app = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                masg: '12',
+                res: '',
+
+            },
+            methods: {
+                login: function () {
+                    axios.post('/login_vue_json', {'name': 'mike', 'age': '18'})
+                        .then(data_res => {
+                            console.log(data_res)
+
+                        })
+                        .catch(err => (console.log(err)))
+
+                },
+                get_login: function () {
+                    axios.get('/login_vue_json')
+                        .then(data_list => {
+                            {#console.log(data_list.data)#}
+                            this.res = data_list.data.grade_data
+                            this.bar_name = data_list.data.bar_data.bar_name
+                            this.xdata = data_list.data.bar_data.x_data
+                            this.ydata = data_list.data.bar_data.y_data
+                            this.$options.methods.myEcharts(this.bar_name, this.xdata, this.ydata)
+
+                        })
+                        .catch(err => (console.log(err)))
+                },
+                myEcharts(bar_name, xdata, ydata) {
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('main'));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: bar_name
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['销量']
+                        },
+                        xAxis: {
+                            data: xdata
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '销量',
+                            type: 'bar',
+                            data: ydata
+                        }]
+                    };
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                },
+
+
+            },
+            mounted() {
+                this.get_login();
+
+
+            }
+
+        });
+
+    </script>
+
+
+{% endblock %}

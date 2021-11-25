@@ -3,8 +3,7 @@ import pymysql
 import pandas as pd
 import sqlite3
 
-
-
+# sqlite数据----dataFram
 class SqliteDB1(object):
     def __init__(self, sql, ):
         self.sql = sql
@@ -15,14 +14,14 @@ class SqliteDB1(object):
         result = result.fillna(0)
         return result
 
-
+#数据专程字典
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
 
-
+# sqlite数据查询
 class SqliteDB(object):
     def __init__(self, sql,):
         self.sql = sql
@@ -42,16 +41,6 @@ class SqliteDB(object):
         cur.execute(self.sql)
         conn.commit()
         return conn.total_changes
-
-
-class MysqlDB1(object):
-    def __init__(self, sql):
-        self.sql = sql
-
-    def connectdb(self):
-        engine = create_engine('mysql+pymysql://schu:slavep@123.103.75.152:3306/school')
-        result = pd.read_sql_query(sql=self.sql, con=engine)
-        return result
 
 
 # 数据库链接
@@ -92,16 +81,12 @@ class MysqlDB(object):
         return res
 
 
-
-
-#链接mysql
+#链接mysql -----dataFrame
 def mysqlDB(sql):
     engine = create_engine(
         'mysql+pymysql://schu:slavep@123.103.75.152:3306/school')
     result = pd.read_sql_query(sql = sql, con = engine)
     return result
-
-
 
 #链接sqlite
 def sqliteDB(sql):
@@ -114,7 +99,7 @@ def sqliteDB(sql):
 con = sqlite3.connect('F:\\PythonObject\\SchoolObject\\db.sqlite3')
 
 
-#数据同步
+#mysql 同步 sqlite数据
 def mysqlSqlite(sql, db_name):
     mysqlDB(sql=sql).to_sql(name=db_name, con=con, if_exists='replace', index=False)
 
