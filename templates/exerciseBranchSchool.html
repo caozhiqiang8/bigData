@@ -8,93 +8,53 @@
 
     <div style="width: 1300px;margin: 40px auto" id="exerciseData">
         <button style="width: 200px;margin-bottom:40px" type="submit" class="btn btn-default"
-                @click='exerciseBranchSchoolSerch'>查询
+                @click='exerciseBranchSchoolDateSerch'>按分校查询
+        </button>
+                <button style="width: 200px;margin-bottom:40px;margin-left:100px" type="submit" class="btn btn-default"
+                @click='exerciseSchoolDateSerch'>按学校查询
         </button>
 
-        <template>
 
+        <template>
             <el-table
                     :data="exerciseBranchSchool_data"
                     border
                     stripe
                     style="width: 100%"
+                    height="600"
                     :default-sort="{prop: 'date', order: 'descending'}"
                     empty-text="点击查询按钮查询数据"
                     v-loading.fullscreen.lock="loading"
                     element-loading-text="玩命的加载中....."
                     element-loading-spinner="el-icon-loading"
                     element-loading-background="rgba(0, 0, 0, 0.5)"
+                    v-show="branchSchoolDateShow"
             >
 
-                <el-table-column
-                        prop="vevry_day"
-                        label="日期"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column   v-for="(item,index) in exerciseBranchSchool_column" :key="index" :label="item"  :prop="item" sortable></el-table-column>
 
 
-                <el-table-column
-                        prop="task_count"
-                        label="总数"
-                        sortable
-                >
-                </el-table-column>
+            </el-table>
+        </template>
 
-                <el-table-column
-                        prop="山东烟台五四分校"
-                        label="山东烟台五四分校"
-                        sortable
-                >
-                </el-table-column>
 
-                <el-table-column
-                        prop="广西柳州分校"
-                        label="广西柳州分校"
-                        sortable
-                >
-                </el-table-column>
+        <template>
+            <el-table
+                    :data="exerciseBranchSchool_data"
+                    border
+                    stripe
+                    style="width: 100%"
+                    height="600"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+                    v-loading.fullscreen.lock="loading"
+                    element-loading-text="玩命的加载中....."
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.5)"
+                    v-show="schoolDateShow"
+            >
 
-                <el-table-column
-                        prop="重庆分校"
-                        label="重庆分校"
-                        sortable
-                >
-                </el-table-column>
-
-                <el-table-column
-                        prop="新疆乌鲁木齐分校"
-                        label="新疆乌鲁木齐分校"
-                        sortable
-                >
-                </el-table-column>
-
-                <el-table-column
-                        prop="山东青岛分校"
-                        label="山东青岛分校"
-                        sortable
-                >
-                </el-table-column>
-                <el-table-column
-                        prop="河北唐山开平分中心"
-                        label="河北唐山开平分中心"
-                        sortable
-                >
-                </el-table-column>
-                <el-table-column
-                        prop="第一教研院"
-                        label="第一教研院"
-                        sortable
-                >
-                </el-table-column>
-
-                <el-table-column
-                        prop="第二教研院"
-                        label="第二教研院"
-                        sortable
-                >
-                </el-table-column>
-
+                <el-table-column   v-for="(item,index) in exerciseBranchSchool_column" :key="index" :label="item"  :prop="item" sortable></el-table-column>
 
             </el-table>
         </template>

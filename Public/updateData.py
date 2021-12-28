@@ -1,8 +1,11 @@
 import datetime
+import time
+
 from Public.sqlDB import  mysqlSqlite, SqliteDB,mysqlDB
 from functools import reduce
 import sqlite3
 import  pandas as pd
+import schedule
 
 
 def paperOnlineInfo():
@@ -30,7 +33,7 @@ def paperOnlineInfo():
 
     }
 
-    return data
+    print(data)
 
 def everyDayTask():
     b_time = datetime.datetime.now()
@@ -82,9 +85,12 @@ def everyDayTask():
         'e_time':e_time.strftime('%Y-%m-%d %H:%M:%S'),
         'lenth_time':lenth_time
     }
-    return data
+    print(data)
 
 
 if __name__ == '__main__':
-    print(everyDayTask())
-    print(paperOnlineInfo())
+    print(datetime.datetime.now())
+    schedule.every().hour.do(everyDayTask)
+    schedule.every().hour.do(paperOnlineInfo)
+    while True:
+        schedule.run_pending()

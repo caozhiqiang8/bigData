@@ -115,12 +115,13 @@ def mapdata():
 def user():
     if request.method == 'GET':
         return render_template('user.html')
+
     if request.method == 'POST':
         user_tea_name = request.form.get('user_tea_name')
         user_tea_id = request.form.get('user_tea_id')
         user_stu_name = request.form.get('user_stu_name')
         user_stu_id = request.form.get('user_stu_id')
-
+        print(user_tea_name,user_tea_id,user_stu_name,user_stu_id)
         if user_tea_name:
             sql = ('''SELECT s.name,s.school_id ,u.ETT_USER_ID,oc.user_name , oc.password,t.TEACHER_NAME ,u.state_id,u.C_TIME
             from  oracle2utf.coschuser_info oc,user_info u,school_info s,teacher_info t
@@ -168,6 +169,9 @@ def user():
             # stu_data = stu_data.to_dict('records')
 
             return render_template('user.html', stu_data=stu_data)
+
+        else:
+            return render_template('user.html')
 
 
 # 资源查询
@@ -391,44 +395,45 @@ def task():
 def useraction():
     if request.method == 'GET':
         return render_template('useraction.html')
+
     else:
         user_id = request.form.get('user_id')
         print(user_id)
         if user_id:
-            es_hosts = str("52.82.47.234,52.83.95.66").split(",")
-            es = Elasticsearch(es_hosts)
-            body = '''{
-                      "_source": ["c_time","ip","param_json","jid"],
-                      "query": {
-                        "bool": {
-                          "must": [
-                            {
-                              "term": {
-                                "jid": {
-                                  "value": %s
+            try:
+                es_hosts = str("52.82.47.234,52.83.95.66").split(",")
+                es = Elasticsearch(es_hosts)
+                body = '''{
+                          "_source": ["c_time","ip","param_json","jid"],
+                          "query": {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "jid": {
+                                      "value": %s
+                                    }
+                                  }
                                 }
+                              ]
+                            }
+                          },"sort": [
+                            {
+                              "c_time": {
+                                "order": "desc"
                               }
                             }
-                          ]
-                        }
-                      },"sort": [
-                        {
-                          "c_time": {
-                            "order": "desc"
-                          }
-                        }
-                      ],
-                      "from":1,
-                      "size":5000
-                }''' % user_id
+                          ],
+                          "from":1,
+                          "size":5000
+                    }''' % user_id
 
-            res = es.search(index="two_month_action_logs", body=body)
-            res = json.dumps(res)
-            # with open('file/{}行为数据.txt'.format(user_id), 'a') as file:
-            #     file.write(res)
-            #     file.write('\n')
-            # url = 'file/{}行为数据.txt'.format(user_id)
-            return render_template('useraction.html', res=res)
+                res = es.search(index="two_month_action_logs", body=body)
+                res = json.dumps(res)
+            except:
+                return render_template('useraction.html')
+            else:
+                return render_template('useraction.html', res=res)
         else:
             res = {'masg': ''}
             return render_template('useraction.html', res=res)
@@ -493,6 +498,14 @@ def exerciseSchool():
 def exerciseBranchSchool():
     return render_template('exerciseBranchSchool.html')
 
+# 练习册试卷教师使用情况路由
+@app.route('/exerciseTea', methods=['get'])
+@singOut
+def exerciseTea():
+    return render_template('exerciseTea.html')
+
+
+
 @app.route('/exerciseBook',methods=['get'])
 def exerciseBook():
     sql = '''
@@ -509,7 +522,7 @@ def exerciseBook():
         book_name.append(i['book_name'])
 
     data = dict(zip(book_id, book_name))
-    print(data)
+    # print(data)
     return  data
 
 @app.route('/exercise', methods=['post', 'get'])
@@ -517,7 +530,7 @@ def exerciseBook():
 def exercise():
     if request.method == 'POST':
         code = request.get_json()
-        # print(code)
+        print(code)
         # 练习册同步查询
         if code['code'] == '0':
             no_structure_sql = '''
@@ -564,7 +577,7 @@ def exercise():
             subject_id = code['subject']
             grade_id = code['grade']
             book_id = code['book']
-            print(subject_id, grade_id, book_id)
+            # print(grade_id,subject_id, book_id)
 
             if book_id == '0' or book_id == '':
                 book_id = 'eb.book_id'
@@ -590,15 +603,41 @@ def exercise():
 
         # 学校练习册使用情况
         elif code['code'] == '3':
+            # 每个学校练习册总数
             sql = '''
             SELECT fr.school_id,fr.name,os.name as belong_name ,count( DISTINCT tt.task_id ) as task_count
             from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa ,oracle2utf.school_info os
-            where    fr.school_id not in ( 50043,51613,50041,53741,50068,53535)  and fr.SCHOOL_ID = aa.dc_school_id 
-            and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and os.school_id = fr.belong_school_id
+            where    fr.school_id not in ( 50043,51613,50041,53741,50068,53535,50044,100002368)  and fr.SCHOOL_ID = aa.dc_school_id  
+            and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and os.school_id = fr.belong_school_id and tt.c_time >= '2021-7-15'
             GROUP BY fr.school_id
             ORDER BY task_count desc
             '''
-            exerciseschool_data = MysqlDB(sql).connectdb()
+            # lxc_data = MysqlDB(sql).connectdb()
+            lxc_data=mysqlDB(sql)
+            # print(lxc_data)
+            school_list = tuple(lxc_data['school_id'].tolist())
+            # print(school_list)
+
+            # 每个学校答题卡总数
+            dtk_sql = '''
+            SELECT fr.school_id,fr.name,os.name as belong_name ,count( DISTINCT tt.task_id ) as dtk_task_count
+            from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa ,oracle2utf.school_info os
+            where    fr.school_id  in {} and fr.SCHOOL_ID = aa.dc_school_id  and tt.c_time >= '2021-7-15'
+            and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 0 and os.school_id = fr.belong_school_id and CLASSROOM_ID is null
+            GROUP BY fr.school_id
+            ORDER BY dtk_task_count desc
+            '''.format(school_list)
+            dtk_data = mysqlDB(dtk_sql)
+
+            df = [lxc_data,dtk_data]
+            exerciseschool_data = reduce(lambda left, right: pd.merge(left, right, on=['school_id','name','belong_name'], how='left'), df)
+
+            # exerciseschool_data.to_excel(r'C:\Users\caozhiqiang\Desktop\学校使用数据.xlsx')
+            # print('导出成功')
+
+            exerciseschool_data = json.loads(exerciseschool_data.to_json(orient='records', force_ascii=False))
+
+            # print(exerciseschool_data)
 
             data = {
                 'exerciseschool_data': exerciseschool_data,
@@ -607,52 +646,168 @@ def exercise():
 
         # 分校每天使用情况
         elif code['code'] == '4':
-
+            #每天总量
             every_sql = '''
-            SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as vevry_day ,count(tt.task_id) as task_count
+            SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as date ,count(tt.task_id) as count
                     from tp_task_info  tt, as_answer_sheet_info aa
-                    where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in ( 50043,51613,50041,53741,50068,53535)
-                    GROUP BY vevry_day
-            		ORDER BY vevry_day DESC
+                    where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in  ( 50043,51613,50041,53741,50068,53535,50044,100002368)  and tt.c_time >= '2021-7-15'
+                    GROUP BY date
+            		ORDER BY date DESC
             '''
             every_day = mysqlDB(every_sql)
 
+            #分校列表
             belong_school_sql = '''
             SELECT distinct fr.belong_school_id ,os.name
             from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa ,oracle2utf.school_info os
-            where    fr.school_id not in ( 50043,51613,50041,53741,50068,53535)  and fr.SCHOOL_ID = aa.dc_school_id and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and os.school_id = fr.belong_school_id
+            where    fr.school_id not in  ( 50043,51613,50041,53741,50068,53535,50044,100002368)   and fr.SCHOOL_ID = aa.dc_school_id and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and os.school_id = fr.belong_school_id and tt.c_time >= '2021-7-15'
             GROUP BY fr.belong_school_id
             '''
             school = mysqlDB(belong_school_sql)
             school_list = school['belong_school_id'].tolist()
             # print(school_list)
 
+
+            #将每个分校的每天数据加入到表格，合并
             df = [every_day, ]
             for i in school_list:
                 school_sql = '''
-                SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as vevry_day ,count(tt.task_id) as task_count
+                SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as date ,count(tt.task_id) as count
                     from tp_task_info  tt, as_answer_sheet_info aa ,franchised_school_info fr 
-                    where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in ( 50043,51613,50041,53741,50068,53535) and aa.DC_SCHOOL_ID = fr.school_id  and fr.belong_school_id = {}
-                    GROUP BY vevry_day
-            		ORDER BY vevry_day DESC
+                    where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in ( 50043,51613,50041,53741,50068,53535,50044,100002368)   and aa.DC_SCHOOL_ID = fr.school_id  
+                    and tt.c_time >= '2021-7-15' and fr.belong_school_id = {}
+                    GROUP BY date
+            		ORDER BY date DESC
                 '''.format(i)
                 beschool = mysqlDB(school_sql)
-                beschool.columns = ['vevry_day', '{}'.format(i)]
+                beschool.columns = ['date', '{}'.format(i)]
                 df.append(beschool)
 
-            every_count = reduce(lambda left, right: pd.merge(left, right, on=['vevry_day'], how='left'), df)
-            every_count = every_count.fillna(0)
+            every_count = reduce(lambda left, right: pd.merge(left, right, on=['date'], how='left'), df)
+            # every_count = every_count.fillna(0)
 
-            column = ['vevry_day', 'task_count']
+            #更换列名
+            column = ['日期', '总数']
             for i in school['name'].tolist():
                 column.append(i)
             every_count.columns = column
+
+            # every_count.to_excel(r'C:\Users\caozhiqiang\Desktop\分校每天使用数据.xlsx')
+            # print('导出成功')
+
+            #求每一列的和
             every_count.loc['sum'] = every_count.iloc[:, 1:].apply(lambda x: x.sum())
+            # print(every_count)
+
+            # 表格列名
+            column_index = every_count.columns.tolist()
+            # print(column_index)
 
             every_count_data = json.loads(every_count.to_json(orient='records', force_ascii=False))
-
+            # print(every_count_data)
             data = {
                 'every_count_data': every_count_data,
+                'column_index':column_index,
+            }
+            return data
+
+        # 学校每天使用情况
+        elif code['code'] =='5':
+            every_sql = '''
+                SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as date ,count(tt.task_id) as count
+                from tp_task_info  tt, as_answer_sheet_info aa
+                where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in  ( 50043,51613,50041,53741,50068,53535,50044,100002368)   and DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= tt.c_time 
+                GROUP BY date
+                ORDER BY date DESC
+                        '''
+            every_day = mysqlDB(every_sql)
+            # every_day['周'] = every_day[0].dt.dayofweek+1
+            # print(every_day)
+
+            # 学校列表
+            school_sql = '''
+            SELECT distinct fr.school_id ,fr.name
+            from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa 
+            where    fr.school_id not in  ( 50043,51613,50041,53741,50068,53535,50044,100002368)   and fr.SCHOOL_ID = aa.dc_school_id and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 
+            GROUP BY fr.school_id
+            ORDER BY fr.belong_school_id 
+                       '''
+            school = mysqlDB(school_sql)
+            school_list = school['school_id'].tolist()
+
+            # 将每个学校的每天数据加入到表格，合并
+            df = [every_day, ]
+            for i in school_list:
+                school_sql = '''
+                SELECT DATE_FORMAT(tt.c_time,'%Y-%m-%d ') as date ,count(tt.task_id) as count
+                from tp_task_info  tt, as_answer_sheet_info aa ,franchised_school_info fr 
+                where   tt.task_value_id = aa.paper_id   and aa.workbook_paper=1 and aa.dc_school_id  not in ( 50043,51613,50041,53741,50068,53535,50044,100002368)   and aa.DC_SCHOOL_ID = fr.school_id  
+                and fr.school_id = {} and DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= tt.c_time
+                GROUP BY date
+                ORDER BY date DESC
+                            '''.format(i)
+                beschool = mysqlDB(school_sql)
+                beschool.columns = ['date', '{}'.format(i)]
+                df.append(beschool)
+
+            every_count = reduce(lambda left, right: pd.merge(left, right, on=['date'], how='left'), df)
+            # every_count = every_count.fillna(0)
+
+            # 更换列名
+            column = ['日期', '总数']
+            for i in school['name'].tolist():
+                column.append(i)
+            every_count.columns = column
+
+            # every_count.to_excel(r'C:\Users\caozhiqiang\Desktop\分校每天使用数据.xlsx')
+            # print('导出成功')
+
+            # 求每一列的和
+            # every_count.loc['sum'] = every_count.iloc[:, 1:].apply(lambda x: x.sum())
+            # print(every_count)
+
+            # 表格列名
+            column_index = every_count.columns.tolist()
+            # print(column_index)
+
+            every_count_data = json.loads(every_count.to_json(orient='records', force_ascii=False))
+            # print(every_count_data)
+            data = {
+                'every_count_data': every_count_data,
+                'column_index': column_index,
+            }
+            return data
+
+        elif code['code'] =='6':
+            lxc_sql = '''
+            SELECT fr.school_id,fr.name,os.name as belong_name ,g.grade_name ,s.subject_name,t.teacher_name ,count( DISTINCT tt.task_id ) as lxc_count
+                        from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa ,oracle2utf.school_info os ,subject_info s,grade_info g,teacher_info t
+                        where    fr.school_id not in ( 50043,51613,50041,53741,50068,53535,50044,100002368)  and fr.SCHOOL_ID = aa.dc_school_id  and s.subject_id = aa.subject_id and g.grade_id = aa.grade_id 
+                        and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and os.school_id = fr.belong_school_id and aa.c_time >'2021-7-15'  and t.user_id = tt.c_user_id  and tt.CLASSROOM_ID is null 
+                        GROUP BY fr.school_id,aa.grade_id ,aa.SUBJECT_ID,tt.c_user_id
+                                    '''
+            lxc_school = mysqlDB(lxc_sql)
+            lxc_school_list = tuple(set(lxc_school['school_id'].tolist()))
+
+            dtk_sql = '''
+            SELECT fr.school_id,fr.name,os.name as belong_name ,g.grade_name ,s.subject_name,t.teacher_name ,count( DISTINCT tt.task_id ) as dtk_count
+                        from tp_task_info  tt, franchised_school_info fr ,as_answer_sheet_info aa ,oracle2utf.school_info os ,subject_info s,grade_info g,teacher_info t
+                        where    fr.school_id  in {} and fr.SCHOOL_ID = aa.dc_school_id  and s.subject_id = aa.subject_id and g.grade_id = aa.grade_id 
+                        and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 0 and os.school_id = fr.belong_school_id and aa.c_time >'2021-7-15'  and t.user_id = tt.c_user_id  and tt.CLASSROOM_ID is null 
+                        GROUP BY fr.school_id,aa.grade_id ,aa.SUBJECT_ID,tt.c_user_id
+            '''.format(lxc_school_list)
+
+            df = [mysqlDB(dtk_sql), lxc_school]
+
+            school_task_count = reduce(lambda left, right: pd.merge(left, right, on=['school_id', 'name', 'belong_name',
+                                                                                     'grade_name', 'subject_name',
+                                                                                     'teacher_name'], how='left'), df)
+            # school_task_count = school_task_count.sort_values(by='lxc_count',axis=0,ascending=False)
+            school_task_count = json.loads(school_task_count.to_json(orient='records', force_ascii=False))
+
+            data = {
+                'school_task_count':school_task_count
+
             }
             return data
 
@@ -667,40 +822,45 @@ def exercise():
 
         school_id = request.args.get('schoolId')
         print(school_id)
-        # school_id = 100002021
+        #获取学校任务列表。
         sql = '''
                     SELECT  GROUP_CONCAT(a.task_id ) as task_id  from
                  (SELECT   DISTINCT(tt.task_id ) as task_id
                 from tp_task_info  tt, school_info s ,as_answer_sheet_info aa
-                where    s.school_id ={}  and s.SCHOOL_ID = aa.dc_school_id and tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1) a
+                where    s.school_id ={}  and s.SCHOOL_ID = aa.dc_school_id and tt.task_value_id = aa.paper_id  and tt.c_time >'2021-7-15' and tt.CLASSROOM_ID is null
+                limit 300 ) a
                     '''.format(school_id)
         task_data = MysqlDB(sql).connectdb()
         task_id_list = task_data[0]['task_id']
 
+        #学校任务详细
         task_sql = '''
-        SELECT DISTINCT(tt.task_id ) as task_id,aa.paper_id,tt.c_user_id  ,tt.task_full_name,aa.grade_id,aa.subject_id  ,DATE_FORMAT(tt.c_time,'%Y-%m-%d %H:%i:%s') as c_time,t.teacher_name,u.ett_user_id
+        SELECT DISTINCT(tt.task_id ) as task_id,aa.paper_id,tt.c_user_id  ,tt.task_full_name,aa.grade_id,aa.subject_id,aa.workbook_paper  ,DATE_FORMAT(tt.c_time,'%Y-%m-%d %H:%i:%s') as c_time,t.teacher_name,u.ett_user_id
         from tp_task_info  tt, as_answer_sheet_info aa,teacher_info t,user_info u
-        where   tt.task_value_id = aa.paper_id  and aa.workbook_paper = 1 and tt.task_id in({})
+        where   tt.task_value_id = aa.paper_id  and tt.task_id in({})
         and t.user_id = tt.c_user_id  and u.ref  = tt.C_USER_ID
         GROUP BY task_id
-        ORDER BY tt.c_time desc
+        ORDER BY aa.workbook_paper desc ,tt.c_time desc
         '''.format(task_id_list)
 
+        #发给班级的任务的率
         c_sql = '''
-
-                SELECT tta.task_id ,count(DISTINCT jc.user_id ) as fm ,count(DISTINCT ttp.user_id) as fz FROM tp_task_allot_info tta, j_class_user jc,tp_task_performance ttp
-                WHERE  tta.task_id in ({})
-                and jc.class_id = tta.user_type_id and jc.RELATION_TYPE = '学生'  and tta.task_id = ttp.task_id
-                GROUP BY tta.task_id
+         SELECT a.task_id ,a.fm,count(DISTINCT ttp.user_id) as fz  from 
+        (SELECT tta.task_id ,count(DISTINCT jc.user_id ) as fm  from  tp_task_allot_info tta, j_class_user jc where 
+        tta.task_id in ({})  and jc.class_id = tta.user_type_id and jc.RELATION_TYPE = '学生' GROUP BY tta.task_id )a  
+        LEFT JOIN tp_task_performance ttp on a.task_id = ttp.task_id
+        GROUP BY a.task_id
         '''.format(task_id_list)
-
+        #发给小组的任务率
         g_sql = '''
-              SELECT tta.task_id ,count(DISTINCT tjg.user_id ) as fm,count(DISTINCT ttp.user_id) as fz FROM tp_task_allot_info tta, tp_j_group_student tjg,tp_task_performance ttp
-                WHERE  tta.task_id in({})
-                and   tta.task_id = ttp.task_id  and tta.user_type_id = tjg.group_id
-                GROUP BY tta.task_id
+        SELECT a.task_id ,a.fm,count(DISTINCT ttp.user_id) as fz  from 
+        (SELECT tta.task_id ,count(DISTINCT tjg.user_id ) as fm FROM tp_task_allot_info tta, tp_j_group_student tjg
+        WHERE  tta.task_id in({}) and tta.user_type_id = tjg.group_id
+        GROUP BY tta.task_id)a
+        LEFT JOIN tp_task_performance ttp on a.task_id = ttp.task_id
+        GROUP BY a.task_id
         '''.format(task_id_list)
-
+        #发给个人的任务率
         stu_sql = '''
          SELECT aa.task_id , aa.fm ,bb.fz FROM (
             SELECT tta.task_id ,count(DISTINCT tjt.user_id ) as fm from tp_task_allot_info tta, tp_j_task_user tjt  WHERE  tta.task_id in ({0})
@@ -712,6 +872,7 @@ def exercise():
             ) bb  on aa.task_id = bb.task_id
         '''.format(task_id_list)
 
+        #任务的批改率
         pg_sql = '''
         SELECT task_id ,count(DISTINCT user_id ) as pg from as_stu_as_logs asa  where asa.task_id in ({0}) and is_marking = 1 and marking_count > 0
         GROUP BY task_id
@@ -725,6 +886,7 @@ def exercise():
             mysqlDB(pg_sql)]
         df_merge = reduce(lambda left, right: pd.merge(left, right, on=['task_id'], how='left'), task_dfs)
         df_merge = df_merge.fillna(0)
+
         school_task = json.loads(df_merge.to_json(orient='records', force_ascii=False))
         user_token = session.get('user_token')
         # print(school_task)

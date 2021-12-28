@@ -25,36 +25,20 @@
                     element-loading-background="rgba(0, 0, 0, 0.5)"
                     v-show="exerciseSchoolShow"
             >
-                <el-table-column
-                        prop="school_id"
-                        label="学校ID"
-                        sortable
-                >
+                <el-table-column prop="school_id" label="学校ID" sortable>
                     <template slot-scope="scope">
-                        <p style="color: blue" @click="getSchoolTask(scope.row.school_id)"> [[ scope.row.school_id ]]</p>
+                        <p style="color: blue" @click="getSchoolTask(scope.row.school_id)"> [[ scope.row.school_id
+                            ]]</p>
                     </template>
                 </el-table-column>
 
-                <el-table-column
-                        prop="name"
-                        label="学校名称"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="name" label="学校名称" sortable></el-table-column>
 
-                <el-table-column
-                        prop="belong_name"
-                        label="分校名称"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="belong_name" label="分校名称" sortable></el-table-column>
 
-                <el-table-column
-                        prop="task_count"
-                        label="练习册发布数量"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="task_count" label="练习册发布数量" sortable></el-table-column>
+
+                <el-table-column prop="dtk_task_count" label="答题卡发布数量" sortable></el-table-column>
 
 
             </el-table>
@@ -76,88 +60,47 @@
                     v-show="schoolTaskShow"
             >
 
+                <el-table-column prop="task_id" label="任务ID" sortable></el-table-column>
 
-                <el-table-column
-                        prop="task_id"
-                        label="任务ID"
-                        sortable
-                >
+                <el-table-column prop="task_full_name" label="任务名称" sortable></el-table-column>
 
+                <el-table-column prop="workbook_paper" label="试卷类型" sortable>
+                    <template slot-scope="scope">[[ paperType[scope.row.workbook_paper] ]]</template>
                 </el-table-column>
 
-                <el-table-column
-                        prop="task_full_name"
-                        label="任务名称"
-                        sortable
-                >
+                <el-table-column prop="c_time" label="创建时间" sortable></el-table-column>
+
+                <el-table-column prop="ett_user_id" label="用户ID" sortable></el-table-column>
+
+                <el-table-column prop="teacher_name" label="姓名" sortable></el-table-column>
+
+                <el-table-column prop="grade_id" label="年级" sortable>
+                    <template slot-scope="scope">[[ gradeMap[scope.row.grade_id] ]]</template>
                 </el-table-column>
 
-                <el-table-column
-                        prop="c_time"
-                        label="创建时间"
-                        sortable
-                >
+                <el-table-column prop="subject_id" label="学科" sortable>
+                    <template slot-scope="scope">[[ subjectMap[scope.row.subject_id] ]]</template>
                 </el-table-column>
 
-                <el-table-column
-                        prop="ett_user_id"
-                        label="用户ID"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="fz" label="完成人数" sortable></el-table-column>
 
-                <el-table-column
-                        prop="teacher_name"
-                        label="教师真实姓名"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="fm" label="接收人数" sortable></el-table-column>
 
-                <el-table-column
-                        prop="fz"
-                        label="完成人数"
-                        sortable
-                >
-                </el-table-column>
+                <el-table-column prop="pg" label="批改人数" sortable></el-table-column>
 
-                <el-table-column
-                        prop="fm"
-                        label="接收人数"
-                        sortable
-                >
-                </el-table-column>
-
-                <el-table-column
-                        prop="pg"
-                        label="批改人数"
-                        sortable
-                >
-                </el-table-column>
-
-
-                </el-table-column>
-
-                <el-table-column
-                        prop=""
-                        label="查看报告"
-                        sortable
-                >
+                <el-table-column prop="" label="查看报告" sortable>
                     <template slot-scope="scope">
                         <a :href=" 'https://school-web.ai-classes.com/ecampus/report/index.html?token=' + [[ userToken ]] + '&tid=' + scope.row.task_id + '&pid=' + scope.row.paper_id "
                            target="_blank">
                             查看报告
                         </a>
                     </template>
-
                 </el-table-column>
-
 
             </el-table>
         </template>
 
-
     </div>
-
 
 
 {% endblock %}

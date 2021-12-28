@@ -102,11 +102,13 @@
                 el: '#paperlist',
                 delimiters: ['[[', ']]'],
                 data: {
-                    paper: '',
+                    paper: [],
                     paper_map: {
                         1: '慧考试',
                         2: '智能组卷'
-                    }
+                    },
+                    currentPage: 1,
+                    pagesize: 10,
                 },
                 methods: {
                     serch() {
@@ -115,7 +117,15 @@
                                 this.paper = data.data.paper_data
                             })
                             .catch(err => (console.log(err)))
-                    }
+                    },
+                    handleSizeChange: function (size) {
+                        this.pagesize = size;
+                        console.log(this.pagesize)  //每页下拉显示数据
+                    },
+                    handleCurrentChange: function (currentPage) {
+                        this.currentPage = currentPage;
+                        console.log(this.currentPage)  //点击第几页
+                    },
                 }
 
             })

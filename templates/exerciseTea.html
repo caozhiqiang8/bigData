@@ -1,0 +1,50 @@
+{% extends 'exerciseBase.html' %}
+
+{% block title %}练习册数据查询{% endblock %}
+
+
+{% block body %}
+    {{ super() }}
+
+    <div style="width: 1300px;margin: 40px auto" id="exerciseData">
+        <button style="width: 200px;margin-bottom:40px" type="submit" class="btn btn-default"
+                @click='exerciseTeaSerch'>查询
+        </button>
+
+        <template>
+            <el-table
+                    :data="school_task_count"
+                    border
+                    stripe
+                    style="width: 100%"
+                    :default-sort="{prop: 'date', order: 'descending'}"
+                    empty-text="点击查询按钮查询数据"
+                    v-loading.fullscreen.lock="loading"
+                    element-loading-text="玩命的加载中....."
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.5)"
+            >
+                <el-table-column prop="school_id" label="学校ID" sortable></el-table-column>
+
+                <el-table-column prop="name" label="学校名称" sortable></el-table-column>
+
+                <el-table-column prop="belong_name" label="分校名称" sortable></el-table-column>
+
+                <el-table-column prop="grade_name" label="年级" sortable></el-table-column>
+
+                <el-table-column prop="subject_name" label="学科" sortable></el-table-column>
+                <el-table-column prop="teacher_name" label="老师姓名" sortable></el-table-column>
+                <el-table-column prop="dtk_count" label="答题卡发布数" sortable></el-table-column>
+                <el-table-column prop="lxc_count" label="练习册发布数" sortable></el-table-column>
+
+
+            </el-table>
+        </template>
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block Active %} 'six' {% endblock %}
